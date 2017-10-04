@@ -1,0 +1,10 @@
+---
+# handlers file for lamp
+- name: restart_apache
+  service: name=httpd state=restarted enabled=yes
+
+- name: apache_restart
+  service: name=apache2 state=restarted enabled=yes
+
+- name: mysql start
+  service: name=mysql state=started enabled=yes

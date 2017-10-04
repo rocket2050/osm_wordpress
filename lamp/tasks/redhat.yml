@@ -1,0 +1,62 @@
+---
+- name: To install Apache 
+  yum: name=httpd state=present
+
+- name: To start Apache
+  service: name=httpd state=started
+
+- name: To install Database
+  yum: name={{ item }} state=present
+  with_items:
+    - mariadb-server
+    - mariadb
+    - MySQL-python
+
+- name: To start MariaDB
+  service: name=mariadb state=started
+
+- name: To set root password for mariadb account
+  mysql_user: name=root host=* password=password priv='*':ALL,GRANT
+
+- name: Ensure that anoymnous user are getted away
+  mysql_user: name='' host=* state=absent
+
+- name: To remove the test database
+  mysql_db: name=test state=absent
+  
+
+- name: To restart MySQL service
+  service: name=mariadb state=restarted
+
+- name: To install PHP
+  yum: name={{ item }} state=present
+  with_items:
+    - php
+    - php-mysql
+
+- name: To restart apache again
+  service: name=httpd state=restarted
+
+- name: To install PHP Modules
+  yum: name={{ item }} state=present
+  with_items:
+    - php-bcmath
+    - php-cli
+    - php-common
+    - php-dba
+    - php-devel
+    - php-embedded
+    - php-enchant
+    - php-fpm
+    - php-gd
+
+- name: To install epel Repo
+  yum: name=epel-release state=present
+
+- name: To install phpmyadmin
+  yum: name=phpmyadmin state=present
+
+- name: To copy file of info
+  copy: src=info.php dest=/var/www/html/info.php
+  notify:
+    - name: restart_apache

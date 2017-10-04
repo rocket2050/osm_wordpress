@@ -1,0 +1,28 @@
+---
+
+- name: Download wordprees and untar it
+  unarchive:
+    src: https://wordpress.org/latest.tar.gz
+    dest: /opt
+    remote_src: yes
+
+- name: Copy sample configuration file to the filename that WordPress actually reads
+  copy: 
+    src: /opt/wordpress/wp-config-sample.php
+    dest: /opt/wordpress/wp-config.php
+    remote_src: yes
+
+- name: Copy the entire contents of the directory into our document root
+  shell: cp -a /opt/wordpress/. /var/www/html
+  #  src: /opt/wordpress/
+  #  dest: /var/www/html
+  #  directory_mode: yes
+  #  remote_src: yes
+
+- name: added the database connection settings
+  template:
+    src: wp-config.php.j2
+    dest: /var/www/html/wp-config.php
+  
+
+

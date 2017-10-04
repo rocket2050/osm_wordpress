@@ -1,0 +1,13 @@
+---
+# tasks file for lamp
+
+- name: To install lamp on Ubuntu
+  include: debian.yml
+  when:
+    ansible_os_family == 'Debian'
+
+- name: TO install lamp on RedHat
+  include: redhat.yml
+  when:
+    ansible_os_family == 'RedHat'
+

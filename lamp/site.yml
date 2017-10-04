@@ -1,0 +1,6 @@
+---
+- hosts: droplets
+  become: yes
+  roles:
+    - lamp
+
