@@ -1,0 +1,15 @@
+---
+# tasks file for lamp
+
+- name: To install lamp on Ubuntu
+  include: "{{ item }}"
+  with_items:
+     - debian.yml
+     - mysql.yml
+  when:
+    ansible_os_family == 'Debian'
+
+- name: TO install lamp on RedHat
+  include: redhat.yml
+  when:
+    ansible_os_family == 'RedHat'
