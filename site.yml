@@ -1,5 +1,5 @@
 ---
-- hosts: "{{host}}"
+- hosts: test1
   roles:
      - lamp
      - wordpress
