@@ -2,7 +2,7 @@
 
 - name: To install lamp
   apt: 
-    name: "{{item}}"apache2 
+    name: "{{item}}" 
     state: present
     update_cache: yes
   with_items:

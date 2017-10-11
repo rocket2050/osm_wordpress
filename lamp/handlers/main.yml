@@ -4,7 +4,7 @@
 - name: apache_restart_debian
   service: name=apache2 state=restarted enabled=true
 
-- name: mysql_start_debian
+- name: mysql_restart_debian
   service: name=mysql state=started enabled=true
 
 - name: start_mysql
