@@ -1,18 +1,30 @@
 ---
-- name: Install Apache Ubuntu
-  apt: name=apache2 state=latest
-  
-- name: Install PHP Ubuntu
-  apt: name=libapache2-mod-php state=present
 
+- name: To install lamp
+  apt: 
+    name: "{{item}}"apache2 
+    state: present
+    update_cache: yes
+  with_items:
+    - apache2
+    - libapache2-mod-php  
+    - phpmyadmin
+    - mysql-client
+    - python-mysqldb
+    - php-mysql
+    - mysql-server
+  notify:
+    - mysql_restart_debian
+
+- name: Mysql_Secure_Installation
+  include: mysql_secure_installation_debian.yml
+
+    
 - name: Install Hello World PHP Script
-  copy: src=index.php dest=/var/www/html/index.php mode=0664
+  copy: src=index.php dest=/var/www/html/index.php mode=0644
 
-- name: Install Hello World PHP script with database
-  copy: src=db.php dest=/var/www/html/db.php mode=0664
-
-- name: install php my admin
-  apt: pkg=phpmyadmin state=present
+- name: Install Hello World PHP Script with database
+  copy: src=db.php dest=/var/www/html/db.php mode=0644
 
 - name: To configure site
   copy: src=apache2.conf dest=/etc/apache2/apache2.conf
@@ -20,4 +32,6 @@
 - name: To configure site 2
   copy: src=apache.conf dest=/etc/phpmyadmin/apache.conf
   notify:
-    - apache_restart
+    - apache_restart_debian
+    - mysql_restart_debian
+

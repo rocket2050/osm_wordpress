@@ -1,0 +1,32 @@
+---
+
+- name: To create a Wordpress db user
+  include: my.yml
+
+- name: To install php-gd
+  yum: name=php-gd state=present
+
+- name: To restart apache
+  service: name=httpd state=restarted
+
+- name: To unarchive file
+  unarchive:
+    src: http://wordpress.org/latest.tar.gz
+    dest: /root/
+    remote_src: yes
+
+- name: To sync wordpress files
+  command: rsync -avP ~/wordpress/ /var/www/html/
+
+- name: To copy templating
+  template: src=wp-config.php.j2 dest=/var/www/html/wp-config.php
+
+- name: to create upload directory
+  file: path=/var/www/html/wp-content/uploads state=directory
+
+- name: To change ownership
+  file: dest=/var/www/html/ owner=apache group=apache mode=0775 recurse=yes
+  notify:
+    - restart_apache
+
+

@@ -1,45 +1,20 @@
 ---
-- name: To install Apache 
-  yum: name=httpd state=present
+- name: To get MySql Repo
+  get_url:
+    url: http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+    dest: /root
 
-- name: To start Apache
-  service: name=httpd state=started
-
-- name: To install Database
-  yum: name={{ item }} state=present
+- name: To Intsall LAMP
+  yum:
+    name: "{{item}}"
+    state: present
   with_items:
-    - mariadb-server
-    - mariadb
+    - epel-release
+    - httpd
+    - /root/mysql-community-release-el7-5.noarch.rpm
+    - mysql-community-server
+    - mysql-community-client
     - MySQL-python
-
-- name: To start MariaDB
-  service: name=mariadb state=started
-
-- name: To set root password for mariadb account
-  mysql_user: name=root host=* password=password priv='*':ALL,GRANT
-
-- name: Ensure that anoymnous user are getted away
-  mysql_user: name='' host=* state=absent
-
-- name: To remove the test database
-  mysql_db: name=test state=absent
-  
-
-- name: To restart MySQL service
-  service: name=mariadb state=restarted
-
-- name: To install PHP
-  yum: name={{ item }} state=present
-  with_items:
-    - php
-    - php-mysql
-
-- name: To restart apache again
-  service: name=httpd state=restarted
-
-- name: To install PHP Modules
-  yum: name={{ item }} state=present
-  with_items:
     - php-bcmath
     - php-cli
     - php-common
@@ -49,14 +24,26 @@
     - php-enchant
     - php-fpm
     - php-gd
+    - php-mysql
+    - php
+    - phpmyadmin
+  notify: 
+    - start_httpd
+    - start_mysql
 
-- name: To install epel Repo
-  yum: name=epel-release state=present
-
-- name: To install phpmyadmin
-  yum: name=phpmyadmin state=present
+- name: To configure MySql
+  include: mysql_secure_installation_redhat.yml
+  notify:
+    - start_mysql
 
 - name: To copy file of info
   copy: src=info.php dest=/var/www/html/info.php
   notify:
-    - name: restart_apache
+    - start_httpd
+
+- name: To copy phpMyAdmin
+  template: src=phpMyAdmin.conf.j2 dest=/etc/httpd/conf.d/phpMyAdmin.conf
+  notify:
+    - start_httpd
+    - start_mysql
+

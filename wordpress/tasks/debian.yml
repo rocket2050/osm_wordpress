@@ -1,28 +1,22 @@
 ---
 
-- name: Download wordprees and untar it
+- name: To get wordpress
   unarchive:
     src: https://wordpress.org/latest.tar.gz
-    dest: /opt
+    dest: /opt/
     remote_src: yes
 
-- name: Copy sample configuration file to the filename that WordPress actually reads
-  copy: 
-    src: /opt/wordpress/wp-config-sample.php
-    dest: /opt/wordpress/wp-config.php
-    remote_src: yes
+- name: To create wordpress db user
+  include: my.yml
 
-- name: Copy the entire contents of the directory into our document root
+- name: Tp copy config file
+  template: src=wp-config.php.j2 dest=/opt/wordpress/wp-config.php
+
+- name: To create upgrade directory
+  file: path=/opt/wordpress/wp-content/upgrade state=directory
+
+- name: To copy contents of wordpress
   shell: cp -a /opt/wordpress/. /var/www/html
-  #  src: /opt/wordpress/
-  #  dest: /var/www/html
-  #  directory_mode: yes
-  #  remote_src: yes
 
-- name: added the database connection settings
-  template:
-    src: wp-config.php.j2
-    dest: /var/www/html/wp-config.php
-  
-
-
+- name: To add database settings
+  template: src=wp-config.php.j2 dest=/var/www/html/wp-config.php

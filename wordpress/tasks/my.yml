@@ -1,0 +1,13 @@
+---
+
+- name: create database for wordpress
+  mysql_db:
+    name: "{{dbname}}"
+    state: present
+
+- name: To create db user
+  mysql_user:
+    name: "{{dbusername}}"
+    password: "{{dbuserpassword}}"
+    priv: '{{dbname}}.*:ALL'
+    state: present

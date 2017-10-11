@@ -1,44 +1,44 @@
 ---
 
+- name: To add my.cnf file
+  template: src=my.cnf.j2 dest=/root/.my.cnf owner=root mode=0602
 
-- name: Add .my.cnf
-  template: src=my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
-
-- name: Set root Password
-  mysql_user: 
-    name: root 
+- name: To set root password
+  mysql_user:
+    name: root
     host: "{{ item }}"
-    password: "{{ mysql_root_pass }}"
+    password: "{{dbrootpassword}}"
     state: present
   with_items:
     - "127.0.0.1"
     - localhost
+  tags:
+    - setpassword_redhat
 
-- name: Reload privilege tables
+- name: To change file permission of my.cnf
+  file: path=/root/.my.cnf  mode=644
+
+- name: To flush priviliges
   command: 'mysql -e "{{ item }}"'
   with_items:
     - FLUSH PRIVILEGES
-  changed_when: False
+  changed_when: false
 
-- name: Remove anonymous users
+- name: Remove anonymous user
   command: 'mysql -ne "{{ item }}"'
   with_items:
     - DELETE FROM mysql.user WHERE User=''
-  changed_when: False
+  changed_when: false
 
 - name: Disallow root login remotely
   command: 'mysql -ne "{{ item }}"'
   with_items:
     - DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')
-  changed_when: False
-
-- name: Reload privilege tables
+  changed_when: false
+ 
+- name: FLUSH privileges
   command: 'mysql -ne "{{ item }}"'
   with_items:
     - FLUSH PRIVILEGES
-  changed_when: False
-
-- name: Restarting mysql
-  service: name=mysql state=restarted
-  when: ansible_os_family == "Debian"
+  changed_when: false
 

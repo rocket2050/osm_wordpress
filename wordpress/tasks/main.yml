@@ -1,13 +1,12 @@
 ---
-# tasks file for lamp
+# tasks file for wordpress
 
-- name: To install lamp on Ubuntu
-  include: debian.yml
-  when:
-    ansible_os_family == 'Debian'
-
-- name: TO install lamp on RedHat
+- name: To install wordpress on RedHat
   include: redhat.yml
   when:
     ansible_os_family == 'RedHat'
 
+- name: To install wordpress on Debian
+  include: debian.yml
+  when:
+    ansible_os_family == 'Debian'
